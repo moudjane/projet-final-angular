@@ -1,0 +1,38 @@
+{
+  "name": "back",
+  "type": "module",
+  "module": "index.ts",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "codegen": "graphql-codegen"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@apollo/datasource-rest": "^6.4.1",
+    "@apollo/server": "^4.11.3",
+    "@prisma/client": "^6.5.0",
+    "bcrypt": "^5.1.1",
+    "graphql": "^16.10.0",
+    "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.11.0",
+    "@graphql-codegen/cli": "^5.0.5",
+    "@graphql-codegen/typescript": "^4.1.5",
+    "@graphql-codegen/typescript-resolvers": "^4.4.4",
+    "@types/bcrypt": "^5.0.2",
+    "@types/bun": "latest",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.13.10",
+    "eslint": "^9.23.0",
+    "globals": "^14.0.0",
+    "prisma": "^6.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
