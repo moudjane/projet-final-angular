@@ -29,6 +29,7 @@ model Post {
   authorId  String
   comments  Comment[]
   likes     Int       @default(0)
+  category  String?
   createdAt String
 }
 

@@ -4,7 +4,7 @@ export const typeDefs = gql`
   type Query {
     me: User
     getPost(id: ID!): Post
-    getPosts(filter: PostFilterInput, pagination: PaginationInput): [Post!]!
+    getPosts(filter: PostFilterInput, pagination: PaginationInput, category: String): [Post!]!
     getUser(username: String!): User
   }
 
@@ -92,7 +92,6 @@ export const typeDefs = gql`
   enum PostOrderField {
     CREATED_AT
     LIKES
-    CATEGORY
   }
 
   enum OrderDirection {
