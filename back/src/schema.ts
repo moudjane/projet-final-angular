@@ -43,6 +43,7 @@ export const typeDefs = gql`
     comments: [Comment!]
     likes: Int
     createdAt: String
+    category: String
   }
 
   type Comment {
@@ -68,12 +69,14 @@ export const typeDefs = gql`
     title: String!
     url: String
     content: String
+    category: String
   }
 
   input UpdatePostInput {
     title: String
     url: String
     content: String
+    category: String
   }
 
   input PostFilterInput {
@@ -89,6 +92,7 @@ export const typeDefs = gql`
   enum PostOrderField {
     CREATED_AT
     LIKES
+    CATEGORY
   }
 
   enum OrderDirection {
