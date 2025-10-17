@@ -46,9 +46,9 @@ export const Query: QueryResolvers = {
     }
   },
 
-  getPosts: async (_, { filter, pagination }) => {
+  getPosts: async (_, { filter, pagination, category }) => {
     const where = filter?.author
-      ? { author: { username: filter.author } }
+      ? { author: { username: filter.author }, category: category || undefined }
       : undefined
 
     const orderBy = filter?.orderBy

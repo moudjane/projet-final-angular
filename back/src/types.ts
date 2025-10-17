@@ -132,7 +132,6 @@ export type PostOrderByInput = {
 }
 
 export enum PostOrderField {
-  Category = 'CATEGORY',
   CreatedAt = 'CREATED_AT',
   Likes = 'LIKES',
 }
@@ -150,6 +149,7 @@ export type QueryGetPostArgs = {
 }
 
 export type QueryGetPostsArgs = {
+  category?: InputMaybe<Scalars['String']['input']>
   filter?: InputMaybe<PostFilterInput>
   pagination?: InputMaybe<PaginationInput>
 }
