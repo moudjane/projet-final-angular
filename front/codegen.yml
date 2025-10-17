@@ -1,0 +1,17 @@
+schema: http://localhost:4000/graphql
+documents: "src/**/*.ts"
+generates:
+  graphql/generated.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-apollo-angular
+    config:
+      avoidOptionals: true
+      enumsAsTypes: true
+      maybeValue: T | null
+      preResolveTypes: true
+
+# optional: watch and verbose examples
+# To run: npx graphql-codegen --config codegen.yml
+# For watch mode: npx graphql-codegen --watch --config codegen.yml
