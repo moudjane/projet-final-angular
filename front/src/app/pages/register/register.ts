@@ -1,13 +1,12 @@
 import {
   Component,
-  computed,
   inject,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth-api.service';
+import { AuthService } from '../../core/services/auth-api';
 
 @Component({
   selector: 'app-register',

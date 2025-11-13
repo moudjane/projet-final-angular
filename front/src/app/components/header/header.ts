@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth-api.service';
+import { AuthService } from '../../core/services/auth-api';
 
 @Component({
   selector: 'app-header',
