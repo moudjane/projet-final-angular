@@ -6,8 +6,8 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  posts: number;
-  comments: number;
+  posts: string[];
+  comments: string[];
   createdAt: string;
 }
 
@@ -69,12 +69,7 @@ export class AuthService {
     }
   `;
 
-  /**
-   * Login : appelle l'API GraphQL, stocke token + user dans les signals, et renvoie le payload.
-   * Lance une erreur si la réponse est invalide.
-   */
   async login(input: LoginInput): Promise<{ token: string; user: User }> {
-    console.log('Appel de login avec input :', input);
     const res = await firstValueFrom(
       this.apollo.mutate<LoginResp>({
         mutation: AuthService.LOGIN_MUTATION,
@@ -82,7 +77,6 @@ export class AuthService {
       })
     );
 
-    console.log('Réponse login :', res);
     const payload = res.data?.login;
     if (!payload?.token || !payload.user) {
       throw new Error('La réponse du serveur est invalide');
@@ -93,13 +87,7 @@ export class AuthService {
     return payload;
   }
 
-  /**
-   * Register : même principe que login mais sur la mutation register.
-   */
-  async register(
-    input: RegisterInput
-  ): Promise<{ token: string; user: User }> {
-    console.log('Appel de register avec input :', input);
+  async register(input: RegisterInput): Promise<{ token: string; user: User }> {
     const res = await firstValueFrom(
       this.apollo.mutate<RegisterResp>({
         mutation: AuthService.REGISTER_MUTATION,
@@ -107,7 +95,6 @@ export class AuthService {
       })
     );
 
-    console.log('Réponse register :', res);
     const payload = res.data?.register;
     if (!payload?.token || !payload.user) {
       throw new Error('La réponse du serveur est invalide');
@@ -115,12 +102,15 @@ export class AuthService {
 
     this.token.set(payload.token);
     this.user.set(payload.user);
+
     return payload;
   }
 
+  //
+  // 🚪 LOGOUT
+  //
   logout() {
     this.token.set(null);
     this.user.set(null);
-    // si tu veux nettoyer du storage, fais-le ici
   }
 }
