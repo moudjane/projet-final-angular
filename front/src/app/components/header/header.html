@@ -1,0 +1,102 @@
+<header class="border-b-2 border-gray-900 bg-white font-mono">
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-8 py-4">
+
+    <!-- left nav -->
+    <nav>
+      <ul class="flex items-center gap-6">
+        
+        <li>
+          <a
+            routerLink="/"
+            routerLinkActive="text-hn-orange"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="font-bold hover:text-hn-orange"
+          >
+            Accueil
+          </a>
+        </li>
+
+        <li>
+          <a
+            routerLink="/articles"
+            routerLinkActive="text-hn-orange"
+            class="font-bold hover:text-hn-orange"
+          >
+            Articles
+          </a>
+        </li>
+
+        @if (authService.user()) {
+
+          <li>
+            <a
+              routerLink="/articles/new"
+              routerLinkActive="text-hn-orange"
+              class="font-bold hover:text-hn-orange"
+            >
+              Nouvel article
+            </a>
+          </li>
+
+          <li>
+            <a
+              routerLink="/my-posts"
+              routerLinkActive="text-hn-orange"
+              class="font-bold hover:text-hn-orange"
+            >
+              Mes Articles
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <!-- right nav -->
+    <nav>
+      <ul class="flex items-center gap-4">
+
+        @if (!authService.isAuthenticated()) {
+          
+          <li>
+            <a
+              routerLink="/login"
+              routerLinkActive="text-hn-orange"
+              class="font-bold hover:text-hn-orange"
+            >
+              Connexion
+            </a>
+          </li>
+
+          <li>
+            <a
+              routerLink="/register"
+              routerLinkActive="text-hn-orange"
+              class="font-bold hover:text-hn-orange"
+            >
+              S'inscrire
+            </a>
+          </li>
+
+        <!-- if authenticated -->
+        } @else {
+
+          <li>
+            <span class="font-bold text-gray-900">
+              Bonjour, {{ authService.user()?.username }}
+            </span>
+          </li>
+
+          <li>
+            <button
+              (click)="handleLogout()"
+              class="font-bold hover:text-hn-orange"
+            >
+              Déconnexion
+            </button>
+          </li>
+        }
+      </ul>
+    </nav>
+
+  </div>
+</header>
