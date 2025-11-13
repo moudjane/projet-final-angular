@@ -38,23 +38,30 @@ export class Register {
     }),
   });
 
-  readonly isValid = computed(() => {
+  isValid(): boolean {
     const email = this.form.controls.email.value.trim();
     const password = this.form.controls.password.value;
     const confirmPassword = this.form.controls.confirmPassword.value;
 
-    return (
-      email !== '' &&
-      password === confirmPassword &&
-      password.length >= 6 &&
-      this.form.valid
-    );
-  });
+    const emailValid = email.length > 0 && email.indexOf('@') > 0;
+    const passwordsMatch = password === confirmPassword;
+    const passwordLongEnough = password.length >= 6;
+
+    return emailValid && passwordsMatch && passwordLongEnough;
+  }
 
   async handleSubmit() {
+    console.log('handleSubmit called');
+    console.log('isValid:', this.isValid());
+    console.log('form values:', {
+      email: this.form.controls.email.value,
+      password: this.form.controls.password.value,
+      confirmPassword: this.form.controls.confirmPassword.value,
+    });
+
     if (!this.isValid()) {
       this.error.set(
-        "L'email doit être renseigné et les mots de passe doivent correspondre et être d’au moins 6 caractères."
+        "L'email doit être renseigné et les mots de passe doivent correspondre et être d'au moins 6 caractères."
       );
       return;
     }
@@ -63,10 +70,12 @@ export class Register {
       this.error.set('');
       this.successMessage.set('');
 
+      console.log('Calling register mutation...');
       const { token, user } = await this.authService.register({
         email: this.form.controls.email.value,
         password: this.form.controls.password.value,
       });
+      console.log('Register success:', { token, user });
 
       if (!token || !user) {
         this.error.set('La réponse du serveur est invalide');

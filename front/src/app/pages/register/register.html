@@ -51,6 +51,15 @@
           </p>
         }
 
+        <!-- debug -->
+        <!-- <div class="text-xs text-gray-600 border p-2">
+          <p>Email: "{{ form.controls.email.value }}" (length: {{ form.controls.email.value.length }})</p>
+          <p>Password: "{{ form.controls.password.value }}" (length: {{ form.controls.password.value.length }})</p>
+          <p>Confirm: "{{ form.controls.confirmPassword.value }}" (length: {{ form.controls.confirmPassword.value.length }})</p>
+          <p>Passwords match: {{ form.controls.password.value === form.controls.confirmPassword.value }}</p>
+          <p>isValid(): {{ isValid() }}</p>
+        </div> -->
+
         <button
           type="submit"
           [disabled]="!isValid()"
