@@ -10,27 +10,41 @@ import {
 } from '../../core/interfaces/auth';
 import { User } from '../../core/interfaces/user';
 
+const AUTH_TOKEN_KEY = 'auth_token';
+const AUTH_USER_KEY = 'auth_user';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly apollo = inject(Apollo);
 
   readonly token = signal<string | null>(this.getStoredToken());
   readonly user = signal<User | null>(this.getStoredUser());
+
   readonly isAuthenticated = computed(() => !!this.token() && !!this.user());
 
   private getStoredToken(): string | null {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('auth_token');
+    if (typeof window === 'undefined') {
+      return null;
     }
-    return null;
+    return localStorage.getItem(AUTH_TOKEN_KEY);
   }
 
   private getStoredUser(): User | null {
-    if (typeof window !== 'undefined') {
-      const userStr = localStorage.getItem('auth_user');
-      return userStr ? JSON.parse(userStr) : null;
+    if (typeof window === 'undefined') {
+      return null;
     }
-    return null;
+
+    const userStr = localStorage.getItem(AUTH_USER_KEY);
+    if (!userStr) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(userStr) as User;
+    } catch {
+      localStorage.removeItem(AUTH_USER_KEY);
+      return null;
+    }
   }
 
   private static readonly LOGIN_MUTATION = gql`
@@ -78,13 +92,7 @@ export class AuthService {
       throw new Error('La réponse du serveur est invalide');
     }
 
-    this.token.set(payload.token);
-    this.user.set(payload.user);
-
-    // Sauvegarder dans localStorage
-    localStorage.setItem('auth_token', payload.token);
-    localStorage.setItem('auth_user', JSON.stringify(payload.user));
-
+    this.setAuth(payload.token, payload.user);
     return payload;
   }
 
@@ -103,20 +111,27 @@ export class AuthService {
       throw new Error('La réponse du serveur est invalide');
     }
 
-    this.token.set(payload.token);
-    this.user.set(payload.user);
-
-    // Sauvegarder dans localStorage
-    localStorage.setItem('auth_token', payload.token);
-    localStorage.setItem('auth_user', JSON.stringify(payload.user));
-
+    this.setAuth(payload.token, payload.user);
     return payload;
+  }
+
+  private setAuth(token: string, user: User) {
+    this.token.set(token);
+    this.user.set(user);
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+    }
   }
 
   logout() {
     this.token.set(null);
     this.user.set(null);
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
+
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      localStorage.removeItem(AUTH_USER_KEY);
+    }
   }
 }
