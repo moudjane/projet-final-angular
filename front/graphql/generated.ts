@@ -192,6 +192,13 @@ export type LoginMutationVariables = Exact<{
 
 export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, username: string, email: string, posts: Array<string>, comments: Array<string>, createdAt: string } } };
 
+export type RegisterMutationVariables = Exact<{
+  input: AuthInput;
+}>;
+
+
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, username: string, email: string, posts: Array<string>, comments: Array<string>, createdAt: string } } };
+
 export const LoginDocument = gql`
     mutation Login($input: AuthInput!) {
   login(input: $input) {
@@ -213,6 +220,32 @@ export const LoginDocument = gql`
   })
   export class LoginGQL extends Apollo.Mutation<LoginMutation, LoginMutationVariables> {
     document = LoginDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const RegisterDocument = gql`
+    mutation Register($input: AuthInput!) {
+  register(input: $input) {
+    token
+    user {
+      id
+      username
+      email
+      posts
+      comments
+      createdAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class RegisterGQL extends Apollo.Mutation<RegisterMutation, RegisterMutationVariables> {
+    document = RegisterDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
