@@ -20,6 +20,15 @@ interface LoginResp {
   login: { token: string; user: User } | null;
 }
 
+interface RegisterInput {
+  email: string;
+  password: string;
+}
+
+interface RegisterResp {
+  register: { token: string; user: User } | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly apollo = inject(Apollo);
@@ -44,8 +53,24 @@ export class AuthService {
     }
   `;
 
+  private static readonly REGISTER_MUTATION = gql`
+    mutation Register($input: AuthInput!) {
+      register(input: $input) {
+        token
+        user {
+          id
+          username
+          email
+          posts
+          comments
+          createdAt
+        }
+      }
+    }
+  `;
+
   /**
-   * Appelle l'API GraphQL, stocke token + user dans les signals, et renvoie le payload.
+   * Login : appelle l'API GraphQL, stocke token + user dans les signals, et renvoie le payload.
    * Lance une erreur si la réponse est invalide.
    */
   async login(input: LoginInput): Promise<{ token: string; user: User }> {
@@ -53,12 +78,37 @@ export class AuthService {
     const res = await firstValueFrom(
       this.apollo.mutate<LoginResp>({
         mutation: AuthService.LOGIN_MUTATION,
-        variables: { input }
+        variables: { input },
       })
     );
 
     console.log('Réponse login :', res);
     const payload = res.data?.login;
+    if (!payload?.token || !payload.user) {
+      throw new Error('La réponse du serveur est invalide');
+    }
+
+    this.token.set(payload.token);
+    this.user.set(payload.user);
+    return payload;
+  }
+
+  /**
+   * Register : même principe que login mais sur la mutation register.
+   */
+  async register(
+    input: RegisterInput
+  ): Promise<{ token: string; user: User }> {
+    console.log('Appel de register avec input :', input);
+    const res = await firstValueFrom(
+      this.apollo.mutate<RegisterResp>({
+        mutation: AuthService.REGISTER_MUTATION,
+        variables: { input },
+      })
+    );
+
+    console.log('Réponse register :', res);
+    const payload = res.data?.register;
     if (!payload?.token || !payload.user) {
       throw new Error('La réponse du serveur est invalide');
     }

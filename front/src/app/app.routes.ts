@@ -4,5 +4,6 @@ export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     // { path : 'home', loadComponent: () => import('./pages/home/home').then(m => m.Home) },
     { path : 'login', loadComponent: () => import('./pages/login/login').then(m => m.LoginComponent) },
+    { path : 'register', loadComponent: () => import('./pages/register/register').then(m => m.Register) },
     { path : '**', redirectTo: '/login' }
 ];
