@@ -106,9 +106,6 @@ export class AuthService {
     return payload;
   }
 
-  //
-  // 🚪 LOGOUT
-  //
   logout() {
     this.token.set(null);
     this.user.set(null);
