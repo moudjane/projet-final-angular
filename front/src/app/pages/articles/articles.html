@@ -1,0 +1,19 @@
+<main class="p-8">
+  <div class="mx-auto max-w-3xl space-y-6">
+    <app-filter-bar
+      [activeFilter]="activeFilter()"
+      (change)="handleFilterChange($event)"
+    ></app-filter-bar>
+
+    <div class="space-y-6">
+      @for (post of sortedPosts(); track post.id) {
+        <app-post-card
+          [post]="post"
+          (upvote)="handleUpvote($event)"
+          (removeUpvote)="handleRemoveUpvote($event)"
+          (viewDetails)="handleViewDetails($event)"
+        ></app-post-card>
+      }
+    </div>
+  </div>
+</main>
