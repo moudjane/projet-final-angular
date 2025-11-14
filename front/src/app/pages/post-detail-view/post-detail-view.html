@@ -1,0 +1,16 @@
+<main class="p-8">
+  <div class="mx-auto max-w-3xl">
+    @if (post()) {
+      <app-post-detail
+        [post]="post()!"
+        (upvote)="handleUpvote($event)"
+        (removeUpvote)="handleRemoveUpvote($event)"
+        (addComment)="handleAddComment($event)"
+      ></app-post-detail>
+    } @else {
+      <p class="font-mono text-gray-700">
+        Loading post...
+      </p>
+    }
+  </div>
+</main>
