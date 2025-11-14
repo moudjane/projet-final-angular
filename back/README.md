@@ -29,7 +29,7 @@ bun install
 ```
 
 3. Set up environment variables:
-(You can use the `.env.example` file as a template)
+(You can use the `.env.test` file as a template)
 Create a `.env` file in the root directory with:
 ```env
 DATABASE_URL="file:./dev.db"

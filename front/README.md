@@ -2,6 +2,32 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.5.
 
+## Getting Started
+
+1. Clone the repository and navigate to the project directory:
+```bash
+cd front
+```
+
+2. Install dependencies:
+```bash
+bun install
+```
+
+3. Set up environment variables:
+(You can use the `.env.example` file as a template)
+Create a `.env` file in the root directory with:
+```env
+BACK_URL=your-back-url
+```
+
+5. Start the development server:
+```bash
+bun run start
+```
+
+The GraphQL server will be available at `http://localhost:4200`
+
 ## Development server
 
 To start a local development server, run:
