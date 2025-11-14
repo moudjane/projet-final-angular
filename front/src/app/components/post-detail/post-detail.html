@@ -1,0 +1,67 @@
+<article class="w-full space-y-6">
+  <!-- Main post card -->
+  <div class="border-2 border-gray-900 bg-white font-mono">
+    <header class="border-b-2 border-gray-900 p-6">
+      <h1 class="mb-4 text-2xl font-bold">
+        {{ post().title }}
+      </h1>
+
+      <div class="flex items-center justify-between text-sm text-gray-600">
+        <span>par {{ post().authorName }}</span>
+        <time>{{ formattedDate() }}</time>
+      </div>
+    </header>
+
+    @if (post().content) {
+      <div class="border-b-2 border-gray-900 p-6">
+        <p class="whitespace-pre-wrap text-gray-800">
+          {{ post().content }}
+        </p>
+      </div>
+    }
+
+    <div class="flex items-center bg-gray-50 p-4">
+      <span class="text-lg font-bold">{{ post().likes }}</span>
+
+      @if (!isPostLiked()) {
+        <button
+          type="button"
+          (click)="onUpvote()"
+          class="ml-4 border-2 border-gray-900 bg-hn-orange px-4 py-2 font-bold text-white hover:bg-orange-500"
+        >
+          Upvote
+        </button>
+      } @else {
+        <button
+          type="button"
+          (click)="onRemoveUpvote()"
+          class="ml-4 border-2 border-gray-900 bg-white px-4 py-2 font-bold hover:bg-gray-100"
+        >
+          Upvoted
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Comment form -->
+  <app-comment-form
+    (submitComment)="onAddComment($event)"
+  ></app-comment-form>
+
+  <!-- Comments list -->
+  @if (post().comments?.length) {
+    <section class="space-y-4">
+      <h2 class="font-mono text-xl font-bold text-gray-900">
+        Commentaires
+      </h2>
+
+      <div class="space-y-4">
+        @for (comment of post().comments!; track comment; let i = $index) {
+          <app-comment-card
+            [comment]="comment.content || ''"
+          ></app-comment-card>
+        }
+      </div>
+    </section>
+  }
+</article>
