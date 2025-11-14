@@ -32,6 +32,16 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () => import('./pages/create-post/create-post').then(m => m.CreatePost)
     },
+        {
+        path: 'post/:id',
+        canActivate: [authGuard],
+        loadComponent: () => import('./pages/post-detail-view/post-detail-view').then(m => m.PostDetailView)
+    },
+    {
+        path: 'my-posts',
+        canActivate: [authGuard],
+        loadComponent: () => import('./pages/my-posts/my-posts').then(m => m.MyPosts)
+    },
     {
         path: '**',
         redirectTo: '/home'
