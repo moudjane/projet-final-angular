@@ -24,6 +24,15 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/register/register').then(m => m.Register)
     },
     {
+        path: 'articles',
+        loadComponent: () => import('./pages/articles/articles').then(m => m.Articles)
+    },
+    {
+        path: 'articles/new',
+        canActivate: [authGuard],
+        loadComponent: () => import('./pages/create-post/create-post').then(m => m.CreatePost)
+    },
+    {
         path: '**',
         redirectTo: '/home'
     }
