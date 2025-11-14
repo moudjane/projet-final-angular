@@ -1,0 +1,33 @@
+<div class="w-full border-2 border-gray-900 bg-white p-4 font-mono">
+  <div class="flex items-center gap-4">
+    <span class="font-bold text-gray-900">Trier par :</span>
+
+    <div class="flex gap-2">
+      <!-- Par date -->
+      <button
+        type="button"
+        (click)="setFilter('CREATED_AT')"
+        class="border-2 border-gray-900 px-4 py-2 font-bold transition-colors hover:bg-gray-100"
+        [class.bg-hn-orange]="activeFilter() === 'CREATED_AT'"
+        [class.text-white]="activeFilter() === 'CREATED_AT'"
+        [class.bg-white]="activeFilter() !== 'CREATED_AT'"
+        [class.text-gray-900]="activeFilter() !== 'CREATED_AT'"
+      >
+        Par date
+      </button>
+
+      <!-- Par popularité -->
+      <button
+        type="button"
+        (click)="setFilter('LIKES')"
+        class="border-2 border-gray-900 px-4 py-2 font-bold transition-colors hover:bg-gray-100"
+        [class.bg-hn-orange]="activeFilter() === 'LIKES'"
+        [class.text-white]="activeFilter() === 'LIKES'"
+        [class.bg-white]="activeFilter() !== 'LIKES'"
+        [class.text-gray-900]="activeFilter() !== 'LIKES'"
+      >
+        Par popularité
+      </button>
+    </div>
+  </div>
+</div>
