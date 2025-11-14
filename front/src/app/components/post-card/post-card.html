@@ -1,0 +1,51 @@
+<article class="w-full border-2 border-gray-900 bg-white font-mono">
+  <!-- HEADER -->
+  <header class="border-b-2 border-gray-900 p-4">
+    <h2
+      class="mb-2 cursor-pointer text-xl font-bold hover:text-hn-orange"
+      (click)="handleTitleClick()"
+    >
+      {{ post().title }}
+    </h2>
+
+    <div class="text-sm text-gray-600">
+      posté par {{ post().authorName }} le {{ formattedDate() }}
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div
+    class="flex items-center justify-between border-b-2 border-gray-900 bg-gray-50 p-4"
+  >
+    <div class="flex items-center gap-4">
+      <span class="text-lg font-bold">{{ post().likes }}</span>
+
+      <!-- Upvote / Remove Upvote -->
+      @if (!isPostLiked()) {
+        <button
+          type="button"
+          (click)="onUpvote()"
+          class="border-2 border-gray-900 bg-hn-orange px-4 py-2 font-bold text-white hover:bg-orange-500"
+        >
+          Upvote
+        </button>
+      } @else {
+        <button
+          type="button"
+          (click)="onRemoveUpvote()"
+          class="border-2 border-gray-900 bg-white px-4 py-2 font-bold hover:bg-gray-100"
+        >
+          Upvoted
+        </button>
+      }
+    </div>
+
+    <button
+      type="button"
+      (click)="onViewDetails()"
+      class="border-2 border-gray-900 bg-gray-900 px-6 py-2 font-bold text-white hover:bg-gray-800"
+    >
+      Voir plus →
+    </button>
+  </div>
+</article>
