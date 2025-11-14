@@ -24,7 +24,6 @@ export interface Post {
 
 @Component({
   selector: 'app-articles',
-  standalone: true,
   imports: [CommonModule, FilterBar, PostCard],
   templateUrl: './articles.html',
   styleUrl: './articles.scss',
