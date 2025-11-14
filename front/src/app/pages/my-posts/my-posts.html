@@ -1,0 +1,97 @@
+<main class="p-8">
+  <div class="mx-auto max-w-3xl">
+    <div class="mb-8 flex items-center justify-between">
+      <h1 class="text-2xl font-bold">Mes Articles</h1>
+
+      <button
+        (click)="goToCreate()"
+        class="border-2 border-gray-900 bg-hn-orange px-4 py-2 font-bold text-white hover:bg-orange-500"
+      >
+        Nouvel Article
+      </button>
+    </div>
+
+    <div class="space-y-6">
+      @for (post of posts(); track post.id) {
+      <article class="border-2 border-gray-900 bg-white font-mono">
+        
+        <!-- EDIT MODE -->
+        @if (isEditing() === post.id) {
+        <div class="p-6">
+          <input
+            [(ngModel)]="editForm().title"
+            type="text"
+            class="mb-4 w-full border-2 border-gray-900 p-3"
+            placeholder="Titre de l'article"
+          />
+
+          <textarea
+            [(ngModel)]="editForm().content"
+            rows="4"
+            class="mb-4 w-full resize-none border-2 border-gray-900 p-3"
+            placeholder="Contenu de l'article"
+          ></textarea>
+
+          <div class="flex gap-2">
+            <button
+              (click)="handleUpdate(post.id!)"
+              class="border-2 border-gray-900 bg-hn-orange px-4 py-2 font-bold text-white hover:bg-orange-500"
+            >
+              Enregistrer
+            </button>
+
+            <button
+              (click)="cancelEdit()"
+              class="border-2 border-gray-900 bg-white px-4 py-2 font-bold hover:bg-gray-100"
+            >
+              Annuler
+            </button>
+          </div>
+        </div>
+        }
+
+        <!-- VIEW MODE -->
+        @else {
+        <div>
+          <div class="border-b-2 border-gray-900 p-6">
+            <h2 class="mb-2 text-xl font-bold">{{ post.title }}</h2>
+            <p class="text-sm text-gray-600">
+              Créé le {{ post.createdAt | date: 'dd MMM yyyy' }}
+            </p>
+          </div>
+
+          @if (post.content) {
+          <div class="border-b-2 border-gray-900 p-6">
+            <p class="whitespace-pre-wrap">{{ post.content }}</p>
+          </div>
+          }
+
+          <div class="flex items-center justify-between bg-gray-50 p-4">
+            <div class="flex items-center gap-2">
+              <button
+                (click)="startEdit(post)"
+                class="border-2 border-gray-900 bg-white px-4 py-2 font-bold hover:bg-gray-100"
+              >
+                Modifier
+              </button>
+
+              <button
+                (click)="handleDelete(post.id!)"
+                class="border-2 border-gray-900 bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-600"
+              >
+                Supprimer
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="font-bold">{{ post.likes }}</span>
+              <span>votes</span>
+            </div>
+          </div>
+        </div>
+        }
+      </article>
+      }
+    </div>
+  </div>
+</main>
