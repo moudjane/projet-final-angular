@@ -9,6 +9,14 @@ import { ActivatedRoute } from '@angular/router';
 
 import { PostDetail } from '../../components/post-detail/post-detail';
 import { Post } from '../../core/interfaces/post';
+import { Apollo } from 'apollo-angular';
+import { firstValueFrom } from 'rxjs';
+import {
+  GetPostDocument,
+  LikePostDocument,
+  UnlikePostDocument,
+  AddCommentDocument,
+} from '../../../../graphql/generated';
 
 type PostWithComments = Post & {
   comments?: { content: string | null; id?: string }[] | null;
@@ -23,6 +31,7 @@ type PostWithComments = Post & {
 })
 export class PostDetailView {
   private readonly route = inject(ActivatedRoute);
+  private readonly apollo = inject(Apollo);
 
   readonly postId = signal<string | null>(null);
   readonly post = signal<PostWithComments | null>(null);
@@ -30,99 +39,133 @@ export class PostDetailView {
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
     this.postId.set(id);
-
-    // TODO: Replace this mock call with a real GraphQL query (GET_POST)
     this.loadPost();
   }
 
-  //
-  // TODO: Replace with real GraphQL GET_POST call using this.postId()
-  //
-  private loadPost() {
+  private async loadPost() {
     const id = this.postId();
-    if (!id) {
-      console.error('No post ID in route');
-      return;
-    }
+    if (!id) return;
 
-    // Temporary mocked post – to be removed when GraphQL is wired
-    this.post.set({
-      id,
-      title: 'Sample post title',
-      content: 'Sample content for this post. Replace with real data.',
-      createdAt: new Date().toISOString(),
-      authorId: 'author-1',
-      authorName: 'John Doe',
-      likes: 10,
-      comments: [
-        { id: 'c1', content: 'First sample comment' },
-        { id: 'c2', content: 'Another comment here' },
-      ],
-    });
+    try {
+      const { data }: any = await firstValueFrom(
+        this.apollo.query({
+          query: GetPostDocument,
+            variables: { id },
+            fetchPolicy: 'network-only',
+        })
+      );
+      const p = data?.getPost;
+      if (!p?.id) return;
+
+      this.post.set({
+        id: p.id,
+        title: p.title ?? '',
+        content: p.content,
+        createdAt: p.createdAt,
+        authorId: p.authorId,
+        authorName: p.authorName,
+        likes: p.likes ?? 0,
+        comments: (p.comments ?? []).map((c: any) => ({
+          id: c.id ?? undefined,
+          content: c.content,
+        })),
+      });
+    } catch (err) {
+      console.error('Failed to load post', err);
+    }
   }
 
-  //
-  // TODO: Replace with GraphQL LikePost mutation + refetch
-  //
   async handleUpvote(postId: string) {
-    console.log('TODO: LikePost mutation for postId =', postId);
-
     const current = this.post();
     if (!current) return;
 
-    this.post.set({
-      ...current,
-      likes: (current.likes ?? 0) + 1,
-    });
+    const prev = current;
+    const liked = JSON.parse(localStorage.getItem('postLikedId') || '[]') as string[];
+    if (!liked.includes(postId)) {
+      localStorage.setItem('postLikedId', JSON.stringify([...liked, postId]));
+    }
 
-    const likedPost = JSON.parse(
-      localStorage.getItem('postLikedId') || '[]'
-    ) as string[];
+    this.post.set({ ...current, likes: (current.likes ?? 0) + 1 });
 
-    if (!likedPost.includes(postId)) {
+    try {
+      await firstValueFrom(
+        this.apollo.mutate({
+          mutation: LikePostDocument,
+          variables: { postId },
+        })
+      );
+    } catch (err) {
+      console.error('LikePost mutation failed', err);
+      // rollback
+      const curLiked = JSON.parse(localStorage.getItem('postLikedId') || '[]') as string[];
       localStorage.setItem(
         'postLikedId',
-        JSON.stringify([...likedPost, postId])
+        JSON.stringify(curLiked.filter(id => id !== postId))
       );
+      this.post.set(prev);
     }
   }
 
-  //
-  // TODO: Replace with GraphQL UnlikePost mutation + refetch
-  //
   async handleRemoveUpvote(postId: string) {
-    console.log('TODO: UnlikePost mutation for postId =', postId);
-
     const current = this.post();
     if (!current) return;
+
+    const prev = current;
+    const liked = JSON.parse(localStorage.getItem('postLikedId') || '[]') as string[];
+    localStorage.setItem('postLikedId', JSON.stringify(liked.filter(id => id !== postId)));
 
     this.post.set({
       ...current,
       likes: Math.max((current.likes ?? 1) - 1, 0),
     });
 
-    const likedPost = JSON.parse(
-      localStorage.getItem('postLikedId') || '[]'
-    ) as string[];
-
-    const updated = likedPost.filter(id => id !== postId);
-    localStorage.setItem('postLikedId', JSON.stringify(updated));
+    try {
+      await firstValueFrom(
+        this.apollo.mutate({
+          mutation: UnlikePostDocument,
+          variables: { postId },
+        })
+      );
+    } catch (err) {
+      console.error('UnlikePost mutation failed', err);
+      // rollback
+      const curLiked = JSON.parse(localStorage.getItem('postLikedId') || '[]') as string[];
+      localStorage.setItem('postLikedId', JSON.stringify([...curLiked, postId]));
+      this.post.set(prev);
+    }
   }
 
-  //
-  // TODO: Replace with GraphQL AddComment mutation + refetch
-  //
   async handleAddComment(content: string) {
     const current = this.post();
-    if (!current || !current.id) return;
+    if (!current?.id || !content.trim()) return;
 
-    console.log('TODO: AddComment mutation for postId =', current.id, 'content =', content);
-
-    const newComment = { id: `temp-${Date.now()}`, content };
-
+    const prev = current;
+    const tempId = `temp-${Date.now()}`;
     this.post.set({
       ...current,
-      comments: [...(current.comments ?? []), newComment],
+      comments: [...(current.comments ?? []), { id: tempId, content }],
     });
+
+    try {
+      const { data }: any = await firstValueFrom(
+        this.apollo.mutate({
+          mutation: AddCommentDocument,
+          variables: { postId: current.id, content },
+        })
+      );
+      const saved = data?.addComment;
+      if (saved?.id) {
+        this.post.set({
+          ...this.post()!,
+          comments: (this.post()!.comments ?? []).map(c =>
+            c.id === tempId ? { id: saved.id, content: saved.content } : c
+          ),
+        });
+      }
+    } catch (err) {
+      console.error('AddComment mutation failed', err);
+      // rollback
+      this.post.set(prev);
+    }
   }
 }
