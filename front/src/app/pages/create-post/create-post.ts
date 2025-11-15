@@ -8,6 +8,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { gql, Apollo } from 'apollo-angular';
+import { firstValueFrom } from 'rxjs';
+import { GetPostsDocument } from '../../../../graphql/generated';
 
 @Component({
   selector: 'app-create-post',
@@ -18,6 +21,7 @@ import { Router } from '@angular/router';
 export class CreatePost {
   private readonly fb = inject(FormBuilder);
   readonly router = inject(Router);
+  private readonly apollo = inject(Apollo);
 
   readonly form = this.fb.nonNullable.group({
     title: ['', Validators.required],
@@ -30,18 +34,39 @@ export class CreatePost {
   // TODO: Connect GraphQL mutation here later
   // createPostMutation.mutate(...)
 
+  private static CREATE_POST = gql`
+    mutation CreatePost($input: CreatePostInput!) {
+      createPost(input: $input) {
+        id
+        title
+        content
+        createdAt
+        authorId
+        authorName
+        likes
+        category
+      }
+    }
+  `;
+
   async handleSubmit() {
     if (this.form.invalid || this.isSubmitting()) return;
 
     this.error.set('');
     this.isSubmitting.set(true);
-
-    // TODO: Replace with GraphQL mutation when ready
-    console.log('TODO: Send GraphQL create post mutation');
+    const input = {
+      title: this.form.controls.title.value,
+      content: this.form.controls.content.value,
+    } as any;
 
     try {
-      // Simulate success for now
-      await new Promise((res) => setTimeout(res, 600));
+      await firstValueFrom(
+        this.apollo.mutate({
+          mutation: CreatePost.CREATE_POST,
+          variables: { input },
+          refetchQueries: [{ query: GetPostsDocument }],
+        })
+      );
 
       this.router.navigateByUrl('/articles');
     } catch (err) {

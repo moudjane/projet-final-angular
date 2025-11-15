@@ -199,6 +199,36 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'AuthPayload', token: string, user: { __typename?: 'User', id: string, username: string, email: string, posts: Array<string>, comments: Array<string>, createdAt: string } } };
 
+export type GetPostsQueryVariables = Exact<{
+  filter: InputMaybe<PostFilterInput>;
+  pagination: InputMaybe<PaginationInput>;
+  category: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetPostsQuery = { __typename?: 'Query', getPosts: Array<{ __typename?: 'Post', id: string | null, title: string | null, createdAt: string | null, authorId: string | null, authorName: string | null, content: string | null, likes: number | null, category: string | null }> };
+
+export type LikePostMutationVariables = Exact<{
+  postId: Scalars['ID']['input'];
+}>;
+
+
+export type LikePostMutation = { __typename?: 'Mutation', likePost: boolean };
+
+export type UnlikePostMutationVariables = Exact<{
+  postId: Scalars['ID']['input'];
+}>;
+
+
+export type UnlikePostMutation = { __typename?: 'Mutation', unlikePost: boolean };
+
+export type CreatePostMutationVariables = Exact<{
+  input: CreatePostInput;
+}>;
+
+
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: string | null, title: string | null, content: string | null, createdAt: string | null, authorId: string | null, authorName: string | null, likes: number | null, category: string | null } };
+
 export const LoginDocument = gql`
     mutation Login($input: AuthInput!) {
   login(input: $input) {
@@ -246,6 +276,88 @@ export const RegisterDocument = gql`
   })
   export class RegisterGQL extends Apollo.Mutation<RegisterMutation, RegisterMutationVariables> {
     document = RegisterDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const GetPostsDocument = gql`
+    query GetPosts($filter: PostFilterInput, $pagination: PaginationInput, $category: String) {
+  getPosts(filter: $filter, pagination: $pagination, category: $category) {
+    id
+    title
+    createdAt
+    authorId
+    authorName
+    content
+    likes
+    category
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class GetPostsGQL extends Apollo.Query<GetPostsQuery, GetPostsQueryVariables> {
+    document = GetPostsDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const LikePostDocument = gql`
+    mutation LikePost($postId: ID!) {
+  likePost(postId: $postId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class LikePostGQL extends Apollo.Mutation<LikePostMutation, LikePostMutationVariables> {
+    document = LikePostDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UnlikePostDocument = gql`
+    mutation UnlikePost($postId: ID!) {
+  unlikePost(postId: $postId)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UnlikePostGQL extends Apollo.Mutation<UnlikePostMutation, UnlikePostMutationVariables> {
+    document = UnlikePostDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreatePostDocument = gql`
+    mutation CreatePost($input: CreatePostInput!) {
+  createPost(input: $input) {
+    id
+    title
+    content
+    createdAt
+    authorId
+    authorName
+    likes
+    category
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreatePostGQL extends Apollo.Mutation<CreatePostMutation, CreatePostMutationVariables> {
+    document = CreatePostDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
