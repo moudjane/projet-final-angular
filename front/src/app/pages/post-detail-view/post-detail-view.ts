@@ -11,12 +11,7 @@ import { PostDetail } from '../../components/post-detail/post-detail';
 import { Post } from '../../core/interfaces/post';
 import { Apollo } from 'apollo-angular';
 import { firstValueFrom } from 'rxjs';
-import {
-  GetPostDocument,
-  LikePostDocument,
-  UnlikePostDocument,
-  AddCommentDocument,
-} from '../../../../graphql/generated';
+import { ApiService } from '../../core/services/service-api';
 
 type PostWithComments = Post & {
   comments?: { content: string | null; id?: string }[] | null;
@@ -32,6 +27,7 @@ type PostWithComments = Post & {
 export class PostDetailView {
   private readonly route = inject(ActivatedRoute);
   private readonly apollo = inject(Apollo);
+  private readonly api = inject(ApiService);
 
   readonly postId = signal<string | null>(null);
   readonly post = signal<PostWithComments | null>(null);
@@ -47,13 +43,7 @@ export class PostDetailView {
     if (!id) return;
 
     try {
-      const { data }: any = await firstValueFrom(
-        this.apollo.query({
-          query: GetPostDocument,
-            variables: { id },
-            fetchPolicy: 'network-only',
-        })
-      );
+      const { data }: any = await firstValueFrom(this.api.getPost(id));
       const p = data?.getPost;
       if (!p?.id) return;
 
@@ -88,12 +78,7 @@ export class PostDetailView {
     this.post.set({ ...current, likes: (current.likes ?? 0) + 1 });
 
     try {
-      await firstValueFrom(
-        this.apollo.mutate({
-          mutation: LikePostDocument,
-          variables: { postId },
-        })
-      );
+      await firstValueFrom(this.api.likePost(postId));
     } catch (err) {
       console.error('LikePost mutation failed', err);
       // rollback
@@ -120,12 +105,7 @@ export class PostDetailView {
     });
 
     try {
-      await firstValueFrom(
-        this.apollo.mutate({
-          mutation: UnlikePostDocument,
-          variables: { postId },
-        })
-      );
+      await firstValueFrom(this.api.unlikePost(postId));
     } catch (err) {
       console.error('UnlikePost mutation failed', err);
       // rollback
@@ -147,12 +127,7 @@ export class PostDetailView {
     });
 
     try {
-      const { data }: any = await firstValueFrom(
-        this.apollo.mutate({
-          mutation: AddCommentDocument,
-          variables: { postId: current.id, content },
-        })
-      );
+      const { data }: any = await firstValueFrom(this.api.addComment(current.id, content));
       const saved = data?.addComment;
       if (saved?.id) {
         this.post.set({

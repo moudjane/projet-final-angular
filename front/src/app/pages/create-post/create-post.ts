@@ -8,7 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { gql, Apollo } from 'apollo-angular';
+import { ApiService } from '../../core/services/service-api';
 import { firstValueFrom } from 'rxjs';
 import { GetPostsDocument } from '../../../../graphql/generated';
 
@@ -21,7 +21,7 @@ import { GetPostsDocument } from '../../../../graphql/generated';
 export class CreatePost {
   private readonly fb = inject(FormBuilder);
   readonly router = inject(Router);
-  private readonly apollo = inject(Apollo);
+  private readonly api = inject(ApiService);
 
   readonly form = this.fb.nonNullable.group({
     title: ['', Validators.required],
@@ -31,40 +31,19 @@ export class CreatePost {
   readonly error = signal('');
   readonly isSubmitting = signal(false);
 
-  private static CREATE_POST = gql`
-    mutation CreatePost($input: CreatePostInput!) {
-      createPost(input: $input) {
-        id
-        title
-        content
-        createdAt
-        authorId
-        authorName
-        likes
-        category
-      }
-    }
-  `;
-
   async handleSubmit() {
     if (this.form.invalid || this.isSubmitting()) return;
 
     this.error.set('');
     this.isSubmitting.set(true);
+
     const input = {
       title: this.form.controls.title.value,
       content: this.form.controls.content.value,
-    } as any;
+    };
 
     try {
-      await firstValueFrom(
-        this.apollo.mutate({
-          mutation: CreatePost.CREATE_POST,
-          variables: { input },
-          refetchQueries: [{ query: GetPostsDocument }],
-        })
-      );
-
+      await firstValueFrom(this.api.createPost(input));
       this.router.navigateByUrl('/articles');
     } catch (err) {
       console.error(err);

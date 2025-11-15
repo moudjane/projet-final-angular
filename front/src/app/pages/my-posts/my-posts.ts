@@ -16,6 +16,7 @@ import {
   GetPostsDocument,
   GetPostsQueryVariables,
 } from '../../../../graphql/generated';
+import { ApiService } from '../../core/services/service-api';
 
 export const UPDATE_POST = gql`
   mutation UpdatePost($id: ID!, $input: UpdatePostInput!) {
@@ -48,6 +49,7 @@ export class MyPosts {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly apollo = inject(Apollo);
+  private readonly api = inject(ApiService);
 
   readonly posts = signal<Post[]>([]);
   readonly isEditing = signal<string | null>(null);
@@ -120,16 +122,7 @@ export class MyPosts {
 
     try {
       const { data }: any = await firstValueFrom(
-        this.apollo.mutate({
-          mutation: UPDATE_POST,
-          variables: {
-            id: postId,
-            input: {
-              title: form.title,
-              content: form.content,
-            },
-          },
-        })
+        this.api.updatePost(postId, { title: form.title, content: form.content })
       );
 
       const updatedPost = data?.updatePost;
@@ -156,13 +149,7 @@ export class MyPosts {
     if (!confirm('Are you sure you want to delete this post?')) return;
 
     try {
-      const { data }: any = await firstValueFrom(
-        this.apollo.mutate({
-          mutation: DELETE_POST,
-          variables: { id: postId },
-        })
-      );
-
+      const { data }: any = await firstValueFrom(this.api.deletePost(postId));
       if (data?.deletePost === true) {
         this.posts.set(this.posts().filter((p) => p.id !== postId));
       }
