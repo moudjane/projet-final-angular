@@ -31,9 +31,6 @@ export class CreatePost {
   readonly error = signal('');
   readonly isSubmitting = signal(false);
 
-  // TODO: Connect GraphQL mutation here later
-  // createPostMutation.mutate(...)
-
   private static CREATE_POST = gql`
     mutation CreatePost($input: CreatePostInput!) {
       createPost(input: $input) {
