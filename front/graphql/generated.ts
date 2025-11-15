@@ -229,6 +229,36 @@ export type CreatePostMutationVariables = Exact<{
 
 export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: string | null, title: string | null, content: string | null, createdAt: string | null, authorId: string | null, authorName: string | null, likes: number | null, category: string | null } };
 
+export type UpdatePostMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  input: UpdatePostInput;
+}>;
+
+
+export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'Post', id: string | null, title: string | null, content: string | null, createdAt: string | null, authorId: string | null, authorName: string | null, likes: number | null, category: string | null } };
+
+export type DeletePostMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeletePostMutation = { __typename?: 'Mutation', deletePost: boolean };
+
+export type GetPostQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetPostQuery = { __typename?: 'Query', getPost: { __typename?: 'Post', id: string | null, title: string | null, content: string | null, createdAt: string | null, authorId: string | null, authorName: string | null, likes: number | null, comments: Array<{ __typename?: 'Comment', id: string | null, content: string | null }> | null } | null };
+
+export type AddCommentMutationVariables = Exact<{
+  postId: Scalars['ID']['input'];
+  content: Scalars['String']['input'];
+}>;
+
+
+export type AddCommentMutation = { __typename?: 'Mutation', addComment: { __typename?: 'Comment', id: string | null, content: string | null, authorId: string | null, authorName: string | null, createdAt: string | null, postId: string | null } };
+
 export const LoginDocument = gql`
     mutation Login($input: AuthInput!) {
   login(input: $input) {
@@ -358,6 +388,98 @@ export const CreatePostDocument = gql`
   })
   export class CreatePostGQL extends Apollo.Mutation<CreatePostMutation, CreatePostMutationVariables> {
     document = CreatePostDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdatePostDocument = gql`
+    mutation UpdatePost($id: ID!, $input: UpdatePostInput!) {
+  updatePost(id: $id, input: $input) {
+    id
+    title
+    content
+    createdAt
+    authorId
+    authorName
+    likes
+    category
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdatePostGQL extends Apollo.Mutation<UpdatePostMutation, UpdatePostMutationVariables> {
+    document = UpdatePostDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DeletePostDocument = gql`
+    mutation DeletePost($id: ID!) {
+  deletePost(id: $id)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DeletePostGQL extends Apollo.Mutation<DeletePostMutation, DeletePostMutationVariables> {
+    document = DeletePostDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const GetPostDocument = gql`
+    query GetPost($id: ID!) {
+  getPost(id: $id) {
+    id
+    title
+    content
+    createdAt
+    authorId
+    authorName
+    likes
+    comments {
+      id
+      content
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class GetPostGQL extends Apollo.Query<GetPostQuery, GetPostQueryVariables> {
+    document = GetPostDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const AddCommentDocument = gql`
+    mutation AddComment($postId: ID!, $content: String!) {
+  addComment(postId: $postId, content: $content) {
+    id
+    content
+    authorId
+    authorName
+    createdAt
+    postId
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class AddCommentGQL extends Apollo.Mutation<AddCommentMutation, AddCommentMutationVariables> {
+    document = AddCommentDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
