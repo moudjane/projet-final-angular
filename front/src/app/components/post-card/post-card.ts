@@ -45,7 +45,7 @@ export class PostCard {
   handleTitleClick() {
     const id = this.post()?.id;
     if (id) {
-      this.router.navigate(['/posts', id]);
+      this.router.navigate(['/post', id]);
     }
   }
 
@@ -61,6 +61,8 @@ export class PostCard {
 
   onViewDetails() {
     const id = this.post()?.id;
-    if (id) this.viewDetails.emit(id);
+    if (id) {
+      this.router.navigate(['/post', id]);
+    }
   }
 }
