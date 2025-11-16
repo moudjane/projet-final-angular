@@ -9,7 +9,7 @@
     </h2>
 
     <div class="text-sm text-gray-600">
-      posté par {{ post().authorName }} le {{ formattedDate() }}
+      posté par {{ post().authorName }} • {{ (post().createdAt ?? '') | timeAgo }}
     </div>
   </header>
 

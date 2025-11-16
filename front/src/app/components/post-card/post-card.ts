@@ -9,10 +9,11 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { Post } from '../../core/interfaces/post';
+import { TimeAgoPipe } from '../../core/pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-post-card',
-  imports: [CommonModule],
+  imports: [CommonModule, TimeAgoPipe],
   templateUrl: './post-card.html',
   styleUrl: './post-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
