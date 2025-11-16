@@ -2,6 +2,10 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.5.
 
+## Prerequisites
+
+Node.js ^20.19.0 || ^22.12.0 || ^24.0.0	
+
 ## Getting Started
 
 1. Clone the repository and navigate to the project directory:
