@@ -7,10 +7,11 @@ import {
 } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AutoFocusDirective } from '../../core/directives/auto-focus.directive';
 
 @Component({
   selector: 'app-comment-form',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, AutoFocusDirective],
   templateUrl: './comment-form.html',
   styleUrl: './comment-form.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
